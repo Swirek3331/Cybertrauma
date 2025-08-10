@@ -16,5 +16,7 @@ if (Game.IsMultiplayer and SERVER) or not Game.IsMultiplayer then
            print("Error loading Cybertrauma: It appears NT Cybernetics isn't loaded!")
            return
         end
+
+        dofile(NTCT.Path .. "/Lua/Scripts/main.lua")
     end, 1)
 end
