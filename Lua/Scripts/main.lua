@@ -87,7 +87,13 @@ local function cyberifyPerson(character)
 
         shuffledOrgans[i] = shuffledOrgans[i]
 
-        HF.SetAffliction(character, shuffledOrgans[i], percent)
+        --to prevent brain from locating intself in torso
+        -- `SetAffliction` uses torso as a default limb
+        if shuffledOrgans[i] == "ntc_cyberbrain" then
+            HF.SetAfflictionLimb(character, shuffledOrgans[i], LimbType.Head, percent)
+        else
+            HF.SetAffliction(character, shuffledOrgans[i], percent)
+        end
         --debug
         print("Given " .. shuffledOrgans[i] .. " to " .. character.Name .. " with " .. percent .. "%")
 
