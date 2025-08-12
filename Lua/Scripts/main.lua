@@ -18,6 +18,14 @@ local limbs = {
     LimbType.LeftLeg
 }
 
+local organs = {
+    "ntc_cyberliver",
+    "ntc_cyberkidney",
+    "ntc_cyberlung",
+    "ntc_cyberheart",
+    "ntc_cyberbrain"
+}
+
 local function isInTable(tbl, val)
     for _, v in ipairs(tbl) do
         if v == val then
@@ -27,6 +35,7 @@ local function isInTable(tbl, val)
     return false
 end
 
+--better chances needs to be done
 local function cyberifyPerson(character)
 
     local shuffledLimbs = {}
@@ -45,6 +54,45 @@ local function cyberifyPerson(character)
     for i = 1, cyberLimbs do
         NTCyb.CyberifyLimb(character, shuffledLimbs[i])
     end
+
+    --organs
+
+    --sometimes there won't be any organs
+    local cyberOrgans = math.random(0, 5)
+
+    if cyberOrgans == 0 then
+        --debug
+        print("No cyber organs will be given to " .. character.Name)
+        return
+    end
+
+    local shuffledOrgans = {}
+
+    for i = 1, #organs do
+        table.insert(shuffledOrgans, organs[i])
+    end
+
+    for i = #shuffledOrgans, 2, -1 do
+        local j = math.random(i)
+        shuffledOrgans[i], shuffledOrgans[j] = shuffledOrgans[j], shuffledOrgans[i]
+    end
+
+    for i = 1, cyberOrgans do
+        --50% means augmented, 100% fully cybernetic
+        local percent = 100
+
+        if math.random() < 0.75 then
+            percent = 50
+        end
+
+        shuffledOrgans[i] = shuffledOrgans[i]
+
+        HF.SetAffliction(character, shuffledOrgans[i], percent)
+        --debug
+        print("Given " .. shuffledOrgans[i] .. " to " .. character.Name .. " with " .. percent .. "%")
+
+    end
+
 end
 
 local allHumans = {}
