@@ -56,6 +56,9 @@ local function cyberifyPerson(character)
     end
 
     --organs
+    --some bug happens:
+    --organs are not given
+    --masive error apears in console
 
     --sometimes there won't be any organs
     local cyberOrgans = math.random(0, 5)
@@ -110,7 +113,8 @@ Hook.Add("roundStart", "NTCT", function ()
         --get all humans except crew members, and "canonical" characters
         for character in Character.CharacterList do
             if not character.IsOnPlayerTeam and character.IsHuman and not isInTable(uniqueNPC, character.Name) then
-                print("Found human character: " .. character.Name)
+                --debug
+                --print("Found human character: " .. character.Name)
                 table.insert(allHumans, character)
             end
         end
