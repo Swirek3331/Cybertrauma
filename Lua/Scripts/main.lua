@@ -104,15 +104,16 @@ local function cyberifyPerson(character)
 
 end
 
-local allHumans = {}
-local cyborgs = {}
-
 Hook.Add("roundStart", "NTCT", function ()
     Timer.Wait(function ()
 
-        --get all humans except crew members, and "canonical" characters
+        local allHumans = {}
+        local cyborgs = {}
+
+
+        --get all alive humans except crew members, and "canonical" characters
         for character in Character.CharacterList do
-            if not character.IsOnPlayerTeam and character.IsHuman and not isInTable(uniqueNPC, character.Name) then
+            if not character.IsOnPlayerTeam and character.IsHuman and not character.IsDead and not isInTable(uniqueNPC, character.Name) then
                 --debug
                 --print("Found human character: " .. character.Name)
                 table.insert(allHumans, character)
