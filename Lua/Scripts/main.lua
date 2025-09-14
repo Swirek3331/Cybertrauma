@@ -106,10 +106,10 @@ end
 
 Hook.Add("roundStart", "NTCT", function ()
     Timer.Wait(function ()
+        --checking table length (#Character.CharacterList) and returning when less than 1, didn't work for some reason
 
         local allHumans = {}
         local cyborgs = {}
-
 
         --get all alive humans except crew members, and "canonical" characters
         for character in Character.CharacterList do
