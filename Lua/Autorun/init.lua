@@ -1,6 +1,6 @@
 NTCT = {}
 NTCT.Name = "Cybertrauma"
-NTCT.Version = "0.1"
+NTCT.Version = "0.2"
 NTCT.Path = table.pack(...)[1]
 Timer.Wait(function() if NTC ~= nil and NTC.RegisterExpansion ~= nil then NTC.RegisterExpansion(NTCT) end end,1)
 
