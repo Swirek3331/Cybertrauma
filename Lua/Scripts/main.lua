@@ -1,3 +1,5 @@
+
+--TOBE changed
 local uniqueNPC = { --I hope localization won't break this
     "Artie Dolittle",
     "Captain Hognose",
@@ -69,6 +71,7 @@ local function addCyberOrgan(character, organ)
         percent = 100
     end
 
+    --`HF.SetAffliction` by default places affliction on torso, wich we don't want for cyberbrain
     if organ == "ntc_cyberbrain" then
         HF.SetAfflictionLimb(character, organ, LimbType.Head, percent)
     else
@@ -78,6 +81,7 @@ end
 
 local function cyberifyPerson(character)
 
+    --Fisher–Yates shuffle
     local shuffled = {}
 
     for i = 1, #cyberthings do
@@ -89,6 +93,7 @@ local function cyberifyPerson(character)
         shuffled[i], shuffled[j] = shuffled[i], shuffled[j]
     end
 
+    --First augmentation is guaranteed, but every next one is 1.3 times unlikely
     for i = 1, #cyberthings do
         if chancePercentage(chanceForNextAugmentation(i - 1)) then
             local thing = table.remove(cyberthings, i)
