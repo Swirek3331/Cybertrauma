@@ -1,4 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<contentpackage name="Cybertrauma" modversion="0.3" corepackage="False" steamworkshopid="3547653216" gameversion="1.13.4.0" altnames="Cybertrauma">
-  <Other file="%ModDir%/Lua/Autorun/init.lua" />
-</contentpackage>

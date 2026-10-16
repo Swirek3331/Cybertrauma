@@ -26,6 +26,26 @@ local organs = {
     "ntc_cyberbrain"
 }
 
+local cyberthings = {
+    LimbType.RightArm,
+    LimbType.LeftArm,
+    LimbType.RightLeg,
+    LimbType.LeftLeg,
+    "ntc_cyberliver",
+    "ntc_cyberkidney",
+    "ntc_cyberlung",
+    "ntc_cyberheart",
+    "ntc_cyberbrain"
+}
+
+local function chancePercentage(percentage)
+    if math.random() * 100 < percentage then
+        return true
+    else
+        return false
+    end
+end
+
 local function isInTable(tbl, val)
     for _, v in ipairs(tbl) do
         if v == val then
@@ -35,120 +55,86 @@ local function isInTable(tbl, val)
     return false
 end
 
---better chances needs to be done
+local function chanceForNextAugmentation(n)
+    local a = 1.3
+
+    --f\left(x\right)=100\cdot\left(\frac{1}{a}\right)^{x}
+    return math.floor(100 * (1/a)^n)
+end
+
+local function addCyberOrgan(character, organ)
+    local percent = 50
+
+    if chancePercentage(25) then
+        percent = 100
+    end
+
+    if organ == "ntc_cyberbrain" then
+        HF.SetAfflictionLimb(character, organ, LimbType.Head, percent)
+    else
+        HF.SetAffliction(character, organ, percent)
+    end
+end
+
 local function cyberifyPerson(character)
 
-    local shuffledLimbs = {}
-    for i = 1, #limbs do
-        table.insert(shuffledLimbs, limbs[i])
+    local shuffled = {}
+
+    for i = 1, #cyberthings do
+        table.insert(shuffled, cyberthings[i])
     end
-    
-    -- Fisher-Yates shuffle algorithm
-    for i = #shuffledLimbs, 2, -1 do
+
+    for i = #shuffled, 2, -1 do
         local j = math.random(i)
-        shuffledLimbs[i], shuffledLimbs[j] = shuffledLimbs[j], shuffledLimbs[i]
+        shuffled[i], shuffled[j] = shuffled[i], shuffled[j]
     end
 
-    local cyberLimbs = math.random(1, 4)
-    
-    for i = 1, cyberLimbs do
-        NTCyb.CyberifyLimb(character, shuffledLimbs[i])
-    end
+    for i = 1, #cyberthings do
+        if chancePercentage(chanceForNextAugmentation(i - 1)) then
+            local thing = table.remove(cyberthings, i)
+            
+            --organ
+            if type(thing) == "string" then
+                addCyberOrgan(character, thing)
 
-    --organs
-    --some bug happens:
-    --organs are not given
-    --masive error apears in console
-
-    --sometimes there won't be any organs
-    local cyberOrgans = math.random(0, 5)
-
-    if cyberOrgans == 0 then
-        --debug
-        print("No cyber organs will be given to " .. character.Name)
-        return
-    end
-
-    local shuffledOrgans = {}
-
-    for i = 1, #organs do
-        table.insert(shuffledOrgans, organs[i])
-    end
-
-    for i = #shuffledOrgans, 2, -1 do
-        local j = math.random(i)
-        shuffledOrgans[i], shuffledOrgans[j] = shuffledOrgans[j], shuffledOrgans[i]
-    end
-
-    for i = 1, cyberOrgans do
-        --50% means augmented, 100% fully cybernetic
-        local percent = 100
-
-        if math.random() < 0.75 then
-            percent = 50
-        end
-
-        shuffledOrgans[i] = shuffledOrgans[i]
-
-        --to prevent brain from locating intself in torso
-        -- `SetAffliction` uses torso as a default limb
-        if shuffledOrgans[i] == "ntc_cyberbrain" then
-            HF.SetAfflictionLimb(character, shuffledOrgans[i], LimbType.Head, percent)
+            --limb
+            else
+                NTCyb.CyberifyLimb(character, thing)
+            end
         else
-            HF.SetAffliction(character, shuffledOrgans[i], percent)
+            break
         end
-        --debug
-        print("Given " .. shuffledOrgans[i] .. " to " .. character.Name .. " with " .. percent .. "%")
-
     end
-
 end
 
 Hook.Add("roundStart", "NTCT", function ()
     Timer.Wait(function ()
-        --checking table length (#Character.CharacterList) and returning when less than 1, didn't work for some reason
 
-        local allHumans = {}
+        local chance = math.floor(Level.Loaded.Difficulty / 2)
+
+        local humans = {}
         local cyborgs = {}
 
         --get all alive humans except crew members, and "canonical" characters
         for character in Character.CharacterList do
             if not character.IsOnPlayerTeam and character.IsHuman and not character.IsDead and not isInTable(uniqueNPC, character.Name) then
-                --debug
-                --print("Found human character: " .. character.Name)
-                table.insert(allHumans, character)
+                table.insert(humans, character)
+
+                if chancePercentage(chance) then
+                    table.insert(cyborgs, character)
+                end
             end
         end
 
-        --Must be changed and be depended on difficulty (the further you go, the harder the levels are, more cyborgs are spawned)
-        local cyborgsAmount = math.random(0, #allHumans)
 
         --debug
-        print("Cyborgs Amount: " .. cyborgsAmount)
-        print("Humans Amount: " .. #allHumans)
+        print("Cyborgs Amount: " .. #cyborgs)
+        print("Humans Amount: " .. #humans)
 
         --there can be a scenario with no cyborgs to spawn
-        if cyborgsAmount < 1 then
+        if #cyborgs < 1 then
             print("No cyborgs")
             return
-        end
-
-        --assign random humans
-        for i = 1, cyborgsAmount do
-            local human = allHumans[math.random(1, #allHumans)]
-            table.insert(cyborgs, human)
-        end
-
-        --debug
-        print("All Humans: ")
-        for _, human in ipairs(allHumans) do
-            print(" - " .. human.Name)
-        end
-
-        --debug
-        print("Cyborgs: ")
-        for _, cyborg in ipairs(cyborgs) do
-            print(" - " .. cyborg.Name)
         end
 
         --When I understood the weakness of my flesh, it disgusted me...
