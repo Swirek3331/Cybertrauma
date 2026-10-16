@@ -1,6 +1,7 @@
 
 --TOBE changed
-local uniqueNPC = { --I hope localization won't break this
+--I am still uncertain if this will work, maybe will break in other localization
+local uniqueNPC = {
     "Artie Dolittle",
     "Captain Hognose",
     "Ignatius May",
@@ -40,6 +41,7 @@ local cyberthings = {
     "ntc_cyberbrain"
 }
 
+--I always have problem with implementing chances
 local function chancePercentage(percentage)
     if math.random() * 100 < percentage then
         return true
@@ -65,8 +67,10 @@ local function chanceForNextAugmentation(n)
 end
 
 local function addCyberOrgan(character, organ)
+    --cyberogran at 50% is cyber augmented and 100% is fully cybernetic
     local percent = 50
 
+    --not sure if 25% chance for fully cybernetic organ is balanced
     if chancePercentage(25) then
         percent = 100
     end
